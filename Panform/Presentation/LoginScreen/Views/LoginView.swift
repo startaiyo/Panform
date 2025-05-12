@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
+    @State private var isSignUpShow = false
 
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
@@ -52,8 +53,11 @@ struct LoginView: View {
 
                 HStack {
                     Text("still not user?")
-                    Link(destination: URL(string: "http://google.com")!,
-                         label: { Text("please sign in") })
+                    Button {
+                        isSignUpShow.toggle()
+                    } label: {
+                        Text("please sign in")
+                    }
                 }
                 Spacer()
             }
@@ -71,9 +75,12 @@ struct LoginView: View {
                 .frame(width: UIScreen.main.bounds.width,
                        height: UIScreen.main.bounds.height)
         )
+        .fullScreenCover(isPresented: $isSignUpShow) {
+            SignUpView(viewModel: viewModel.signUpViewModel)
+        }
     }
 }
 
 #Preview {
-    LoginView(viewModel: LoginViewModel(onLoginSuccess: {}))
+    LoginView(viewModel: LoginViewModel(authNetworkService: AuthNetworkService.shared, onLoginSuccess: {}))
 }

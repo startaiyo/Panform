@@ -16,7 +16,6 @@ struct BakeryRankingCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // 1. Bread name and rating
             HStack {
                 Text(viewModel.bread.name)
                     .font(.headline)
@@ -33,7 +32,20 @@ struct BakeryRankingCell: View {
                     Text(String(format: "%.1f", viewModel.averageRating))
                         .font(.subheadline)
                         .foregroundColor(.gray)
+                    Button {
+                        viewModel.saveButtonTapped()
+                    } label: {
+                        Image(systemName: viewModel.isSaved ? "bookmark.fill" : "bookmark")
+                    }
                 }
+            }
+
+            if viewModel.isSaved {
+                TextField("memo", text: $viewModel.comment)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .padding(.vertical, 8)
             }
 
             Text("\(viewModel.bread.price)円")
@@ -66,9 +78,4 @@ struct BakeryRankingCell: View {
         .cornerRadius(8)
         .shadow(radius: 2)
     }
-}
-
-#Preview {
-    BakeryRankingCell(viewModel: BakeryRankingCellViewModel(bread: BreadModel.stub(),
-                                                            reviews: [BreadReviewModel.stub(), BreadReviewModel.stub()]))
 }

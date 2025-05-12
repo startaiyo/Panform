@@ -5,12 +5,15 @@
 //  Created by Shotaro Doi on 2025/04/05.
 //
 
+import PhotosUI
 import SwiftUI
 
 struct BakeryPostDraftCell: View {
     @ObservedObject var viewModel: BakeryPostDraftCellViewModel
+    @State private var isPhotoPickerPresented = false
+    @State private var selectedItems: [PhotosPickerItem] = []
 
-    private let scores = stride(from: 1.0, through: 5.0, by: 0.1).map { Double(round($0 * 10) / 10) }
+    private let scores = stride(from: 1.0, through: 5.0, by: 0.1).map { Float(round($0 * 10) / 10) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -25,11 +28,28 @@ struct BakeryPostDraftCell: View {
                 Spacer()
 
                 Button(action: {
-                    // Handle save action
+                    viewModel.postReviews()
                 }) {
-                    Text("Save")
+                    Text("Post")
                         .foregroundColor(.white)
                         .bold()
+                }
+                .buttonStyle(PlainButtonStyle())
+
+                Button(action: {
+                    viewModel.saveDraft()
+                }) {
+                    Text("Save the draft")
+                        .foregroundColor(.white)
+                        .bold()
+                }
+                .buttonStyle(PlainButtonStyle())
+
+                Button(action: {
+                    viewModel.deleteDraft()
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.white)
                 }
                 .buttonStyle(PlainButtonStyle())
             }
@@ -39,7 +59,6 @@ struct BakeryPostDraftCell: View {
 
             // Main Content
             VStack(alignment: .leading, spacing: 12) {
-                // Score Picker
                 HStack {
                     Text("Score")
                         .font(.subheadline)
@@ -57,6 +76,25 @@ struct BakeryPostDraftCell: View {
                     .frame(width: 80)
                 }
 
+                HStack {
+                    Text("Price")
+                        .font(.subheadline)
+                        .bold()
+
+                    Spacer()
+
+                    TextField("price", text: Binding(
+                        get: { viewModel.postDraft.price == 0 ? "" : String(viewModel.postDraft.price) },
+                        set: { viewModel.postDraft.price = Int($0) ?? 0 }
+                    ))
+                        .keyboardType(.decimalPad)
+                        .font(.headline)
+                        .multilineTextAlignment(.trailing)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .frame(width: 80)
+                    Text("円")
+                }
+
                 // Comment Input
                 TextEditor(text: $viewModel.postDraft.comment)
                     .frame(minHeight: 80)
@@ -65,7 +103,7 @@ struct BakeryPostDraftCell: View {
                     .cornerRadius(8)
                     .overlay(
                         Group {
-                            if viewModel.postDraft.breadName.isEmpty {
+                            if viewModel.postDraft.comment.isEmpty {
                                 Text("please input the comment")
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 12)
@@ -80,7 +118,7 @@ struct BakeryPostDraftCell: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         Button(action: {
-                            // Handle photo add
+                            isPhotoPickerPresented = true
                         }) {
                             ZStack {
                                 Rectangle()
@@ -93,16 +131,37 @@ struct BakeryPostDraftCell: View {
                             }
                         }
 
-                        // Optionally show selected photos
-                        ForEach($viewModel.postDraft.selectedPhotos.indices, id: \.self) { index in
-                            Image(uiImage: viewModel.postDraft.selectedImages[index])
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 100, height: 100)
-                                .clipped()
-                                .cornerRadius(8)
+                        ForEach(viewModel.postDraft.draftImages, id: \.self) { image in
+                            if let uiImage = UIImage(data: image.imageData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipped()
+                                    .cornerRadius(8)
+                            }
                         }
                     }
+                }
+                .photosPicker(isPresented: $isPhotoPickerPresented,
+                              selection: $selectedItems,
+                              maxSelectionCount: 5,
+                              matching: .images)
+                .onChange(of: selectedItems) { newItems in
+                    Task {
+                        for item in newItems {
+                            if let data = try? await item.loadTransferable(type: Data.self),
+                               let image = UIImage(data: data),
+                               let jpegData = image.jpegData(compressionQuality: 0.8) {
+                                let imageData = BakeryPostDraftImage(id: UUID(),
+                                                                     imageData: jpegData)
+                                viewModel.postDraft.draftImages.append(imageData)
+                            }
+                        }
+                    }
+                }
+                .onAppear {
+                    
                 }
             }
             .padding()

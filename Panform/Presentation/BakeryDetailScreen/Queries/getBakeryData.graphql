@@ -1,0 +1,21 @@
+query GetBakeryData($bakeryID: uuid!) {
+  bakeries(where: { id: { _eq: $bakeryID } }) {
+    name
+    breads {
+      id
+      name
+      price
+      breadReviews {
+        comment
+        rate
+        id
+        userId
+      }
+      breadPhotos {
+        imageUrl
+        id
+        userId
+      }
+    }
+  }
+}

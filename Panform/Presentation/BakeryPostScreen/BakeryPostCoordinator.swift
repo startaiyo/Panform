@@ -10,6 +10,10 @@ import SwiftUI
 final class BakeryPostCoordinator: Coordinator {
     private let navigationController: UINavigationController
     private let bakeryID: BakeryID
+    private let authNetworkService = AuthNetworkService.shared
+    private let bakeryStorageService = BakeryStorageService()
+    private let bakeryNetworkService = BakeryNetworkService()
+    private let graphQLClient = GraphQLClient.shared
 
     init(navigationController: UINavigationController,
          bakeryID: BakeryID) {
@@ -25,10 +29,11 @@ final class BakeryPostCoordinator: Coordinator {
 // MARK: - Private functions
 private extension BakeryPostCoordinator {
     func showBakeryPostScreen(of bakeryID: BakeryID) {
-        let viewModel = BakeryPostViewModel(breads: [BreadModel.stub()],
-                                            breadReviews: [BreadReviewModel.stub()],
-                                            breadPhotos: [BreadPhotoModel.stub()],
-                                            bakeryID: bakeryID)
+        let viewModel = BakeryPostViewModel(bakeryID: bakeryID,
+                                            apolloClient: graphQLClient,
+                                            authNetworkService: authNetworkService,
+                                            bakeryStorageService: bakeryStorageService,
+                                            bakeryNetworkService: bakeryNetworkService)
         let viewController = UIHostingController(rootView:
             BakeryPostView(viewModel: viewModel)
         )

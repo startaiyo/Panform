@@ -15,14 +15,12 @@ struct BakeryDetailView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Text(viewModel.bakery.name)
                 .font(.title)
-                .padding()
 
             Text("\(viewModel.bakery.openingDays.map(\.rawValue).joined(separator: ", ")) \(viewModel.bakery.openAt.formatted) ~ \(viewModel.bakery.closeAt.formatted)")
                 .font(.subheadline)
-                .padding()
 
             HStack(spacing: 4) {
                 ForEach(0..<5) { index in
@@ -33,24 +31,6 @@ struct BakeryDetailView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
-            .padding()
-
-            HStack {
-                Text(viewModel.bakery.memo)
-                    .font(.body)
-                    .padding()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                Spacer()
-                Button(action: {
-                    // TODO: Add edit action
-                }) {
-                    Image(systemName: "pencil")
-                        .foregroundColor(.blue)
-                }
-                .padding(.trailing)
-            }
-            .padding()
 
             VStack(alignment: .leading) {
                 Text("Photos")
@@ -93,57 +73,32 @@ struct BakeryDetailView: View {
                 .background(Color.darkBlue)
 
             ScrollView {
-                // 2. Rankings List
                 LazyVStack(spacing: 0) {
-                    ForEach(viewModel.breads.sorted { bread1, bread2 in
-                        let bread1Rate = viewModel.breadReviews.filter { $0.breadID == bread1.id }.map(\.rate).first ?? 0
-                        let bread2Rate = viewModel.breadReviews.filter { $0.breadID == bread2.id }.map(\.rate).first ?? 0
-                        return bread1Rate > bread2Rate
-                    }) { bread in
-                        BakeryRankingCell(viewModel: BakeryRankingCellViewModel(
-                            bread: bread,
-                            reviews: viewModel.breadReviews
-                        ))
-                        .padding(.horizontal)
-                        .padding(.vertical, 8) // Add some spacing if you want
+                    ForEach(viewModel.bakeryRankingCellViewModels
+                        .sorted { cellViewModel1, cellViewModel2 in
+                            return cellViewModel1.averageRating > cellViewModel2.averageRating
+                        }
+                    ) { cellViewModel in
+                        BakeryRankingCell(viewModel: cellViewModel)
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
                     }
                 }
             }
             .background(Color.clear)
 
-            HStack {
-                Button(action: {
-                    // TODO: Add save action
-                }) {
-                    Text("Save")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.darkPink)
-                        .cornerRadius(8)
-                }
-
-                Button(action: {
-                    viewModel.showBakeryPostScreen()
-                }) {
-                    Text("Post")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.darkPink)
-                        .cornerRadius(8)
-                }
+            Button(action: {
+                viewModel.showBakeryPostScreen()
+            }) {
+                Text("Post")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.darkPink)
+                    .cornerRadius(8)
             }
             .padding()
         }
         .background(Color.creme.ignoresSafeArea())
     }
-}
-
-#Preview {
-    BakeryDetailView(viewModel: BakeryDetailViewModel(bakery: .stub(),
-                                                      breads: [BreadModel.stub(), BreadModel.stub()],
-                                                      breadReviews: [BreadReviewModel.stub(), BreadReviewModel.stub()],
-                                                      breadPhotos: [BreadPhotoModel.stub(), BreadPhotoModel.stub()],
-                                                      didRequestToShowBakeryPost: {}))
 }

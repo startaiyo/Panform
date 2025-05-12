@@ -11,15 +11,24 @@ protocol BakeryPostCellViewModelProtocol: ObservableObject {
     
 }
 
-final class BakeryPostCellViewModel: BakeryPostCellViewModelProtocol {
+final class BakeryPostCellViewModel: BakeryPostCellViewModelProtocol, Identifiable  {
     let bread: BreadModel?
     let reviews: [BreadReviewModel]
     let photos: [BreadPhotoModel]
+    let didRequestToAddReview: ((BreadModel) -> Void)?
 
-    init(bread: BreadModel?, reviews: [BreadReviewModel], photos: [BreadPhotoModel]) {
+    init(bread: BreadModel?, reviews: [BreadReviewModel], photos: [BreadPhotoModel], didRequestToAddReview: ((BreadModel) -> Void)?) {
         self.bread = bread
         self.reviews = reviews
         self.photos = photos
+        self.didRequestToAddReview = didRequestToAddReview
+    }
+}
+
+// MARK: - Inputs
+extension BakeryPostCellViewModel {
+    func addReview(of breadModel: BreadModel) {
+        didRequestToAddReview?(breadModel)
     }
 }
 

@@ -1,0 +1,26 @@
+mutation UpsertBreadPost(
+  $breadID: uuid
+  $bakeryID: uuid!
+  $name: String!
+  $price: Int!
+  $comment: String!
+  $rate: float8!
+  $userId: uuid!
+  $imageUrls: [breadPhotos_insert_input!]!
+) {
+  insert_breads_one(
+    object: {
+      id: $breadID
+      bakeryId: $bakeryID
+      name: $name
+      price: $price
+      breadReviews: {
+        data: { comment: $comment, rate: $rate, userId: $userId }
+      }
+      breadPhotos: { data: $imageUrls }
+    }
+    on_conflict: { constraint: breads_pkey, update_columns: [name, price] }
+  ) {
+    id
+  }
+}

@@ -17,18 +17,18 @@ struct BakeryPostView: View {
     var body: some View {
         VStack {
             List {
-                ForEach(viewModel.breads) { bread in
-                    BakeryPostCell(viewModel: BakeryPostCellViewModel(bread: bread, reviews: viewModel.breadReviews, photos: viewModel.breadPhotos))
+                ForEach(viewModel.bakeryPostCellViewModels) { cellViewModel in
+                    BakeryPostCell(viewModel: cellViewModel)
                         .listRowBackground(Color.clear)
                 }
 
-                ForEach(viewModel.bakeryPostDrafts) { bakeryPostDraft in
-                    BakeryPostDraftCell(viewModel: .init(postDraft: bakeryPostDraft))
+                ForEach(viewModel.bakeryPostDraftViewModels) { cellViewModel in
+                    BakeryPostDraftCell(viewModel: cellViewModel)
                         .listRowBackground(Color.clear)
                 }
 
                 Button(action: {
-                    viewModel.addNewPost()
+                    viewModel.addNewPost(for: nil)
                 }) {
                     Text("＋")
                         .font(.largeTitle)

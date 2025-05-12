@@ -25,6 +25,9 @@ struct SavedBakeryCell: View {
             }
             .padding()
             .background(Color.darkBlue)
+            .onTapGesture {
+                viewModel.showSavedBakeryScreen()
+            }
 
             // Content Section
             HStack(alignment: .top, spacing: 12) {

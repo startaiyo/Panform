@@ -1,0 +1,11 @@
+query GetBakeriesInfo {
+  bakeries {
+    id
+    openingDays
+    openAt
+    name
+    longitude
+    latitude
+    closeAt
+  }
+}

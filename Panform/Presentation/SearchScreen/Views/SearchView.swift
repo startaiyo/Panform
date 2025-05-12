@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct SearchView: View {
     @State private var searchQuery = ""
@@ -17,18 +18,19 @@ struct SearchView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SearchBar(text: $searchQuery)
-            Button {
-                viewModel.showDetail()
-            } label: {
-                Text("Go to detail")
-            }
-//            MapView(searchQuery: $searchQuery)
-//                .edgesIgnoringSafeArea(.all)
+            SearchBar(onSearchButtonClicked: { searchText in
+                searchQuery = searchText
+            })
+            MapView(searchQuery: $searchQuery,
+                    bakeries: $viewModel.bakeries,
+                    onTap: { bakery in
+                viewModel.showDetail(of: bakery)
+            })
+                .edgesIgnoringSafeArea(.all)
         }
     }
 }
 
 #Preview {
-    SearchView(viewModel: SearchViewModel(didRequestToShowBakeryDetail: { }))
+    SearchView(viewModel: SearchViewModel(apolloClient: GraphQLClient.shared, didRequestToShowBakeryDetail: { _ in }))
 }

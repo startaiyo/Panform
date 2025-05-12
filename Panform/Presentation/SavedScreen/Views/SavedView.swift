@@ -21,15 +21,8 @@ struct SavedView: View {
             // Scrollable list of bakeries
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    ForEach(viewModel.bakeries, id: \.id) { bakery in
-                        SavedBakeryCell(
-                            viewModel: SavedBakeryCellViewModel(
-                                bakery: bakery,
-                                breads: viewModel.breads,
-                                breadReviews: viewModel.breadReviews,
-                                breadPhotos: viewModel.breadPhotos
-                            )
-                        )
+                    ForEach(viewModel.savedBakeryCellViewModels) { viewModel in
+                        SavedBakeryCell(viewModel: viewModel)
                     }
                 }
                 .padding(.top)

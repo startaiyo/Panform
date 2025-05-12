@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct SearchBar: UIViewRepresentable {
-    @Binding var text: String
+    @State var text: String = ""
+    var onSearchButtonClicked: ((String) -> Void)?
 
     class Coordinator: NSObject, UISearchBarDelegate {
         var parent: SearchBar
@@ -20,10 +21,15 @@ struct SearchBar: UIViewRepresentable {
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             parent.text = searchText
         }
+
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            parent.onSearchButtonClicked?(parent.text)
+            searchBar.resignFirstResponder()
+        }
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(self)
+        Coordinator(self)
     }
 
     func makeUIView(context: Context) -> UISearchBar {

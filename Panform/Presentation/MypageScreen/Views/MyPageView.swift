@@ -14,36 +14,44 @@ enum MyPageSegment: String, CaseIterable {
 }
 
 struct MyPageView: View {
+    @ObservedObject private var viewModel: MyPageViewModel
     @State private var selectedSegment: MyPageSegment = .posts
+    @State private var isShowEditProfile = false
 
-    private let user = UserModel(
-        id: UUID(),
-        name: "John Doe",
-        email: "john@example.com",
-        description: "Passionate about baking breads!",
-        avatarURL: URL(string: "https://example.com/avatar.png")!
-    )
-
-    private let breadPosts: [BakeryRankingCellViewModel] = [.init(bread: .stub(),
-                                                                  reviews: [.stub(), .stub()])]
+    init(viewModel: MyPageViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
+            if let currentPanformUser = viewModel.currentPanformUser {
                 HStack(alignment: .center, spacing: 16) {
-                    ZStack(alignment: .bottomTrailing) {
-                        Circle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(width: 80, height: 80)
-                        Image(systemName: "pencil.circle.fill")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .background(Color.white)
-                            .clipShape(Circle())
-                            .offset(x: 8, y: 8)
+                    AsyncImage(url: currentPanformUser.avatarURL) { phase in
+                        switch phase {
+                            case .empty:
+                                Circle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(width: 80, height: 80)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 80, height: 80)
+                                    .clipShape(Circle())
+                            case .failure:
+                                Circle()
+                                    .fill(Color.red.opacity(0.3))
+                                    .overlay(
+                                        Image(systemName: "exclamationmark.triangle")
+                                            .foregroundColor(.white)
+                                    )
+                                    .frame(width: 80, height: 80)
+                            @unknown default:
+                                EmptyView()
+                        }
                     }
                     VStack(alignment: .leading) {
-                        Text(user.name)
+                        Text(currentPanformUser.name)
                             .font(.title2)
                             .bold()
                     }
@@ -51,69 +59,82 @@ struct MyPageView: View {
                 }
                 .padding(.top)
 
-                Text(user.description)
+                Text(currentPanformUser.description)
                     .font(.body)
                     .padding(.horizontal)
-
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        // Navigate to Edit Profile
-                    }) {
-                        Text("Edit Profile")
-                            .font(.subheadline)
-                            .underline()
-                    }
-                    Spacer()
+            }
+            
+            HStack {
+                Spacer()
+                Button(action: {
+                    isShowEditProfile.toggle()
+                }) {
+                    Text("Edit Profile")
+                        .font(.subheadline)
+                        .underline()
                 }
-
-                Picker("", selection: $selectedSegment) {
-                    ForEach(MyPageSegment.allCases, id: \.self) { segment in
-                        Text(segment.rawValue)
-                            .tag(segment)
-                    }
+                Spacer()
+                    .frame(width: 20)
+                Button(action: {
+                    viewModel.logout()
+                }) {
+                    Text("Logout")
+                        .font(.subheadline)
+                        .underline()
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                Spacer()
+            }
+            
+//                Picker("", selection: $selectedSegment) {
+//                    ForEach([MyPageSegment.posts], id: \.self) { segment in
+//                        Text(segment.rawValue)
+//                            .tag(segment)
+//                    }
+//                }
+//                .pickerStyle(SegmentedPickerStyle())
+//                .padding()
+            Text("Posts")
+                .font(.headline)
+                .foregroundColor(.white)
                 .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.darkBlue)
 
+            ScrollView {
                 Group {
                     switch selectedSegment {
-                        case .posts:
-                            VStack(spacing: 8) {
-                                ForEach(breadPosts, id: \.bread.name) { viewModel in
-                                    BakeryRankingCell(viewModel: viewModel)
-                                }
+                    case .posts:
+                        VStack(spacing: 8) {
+                            ForEach(viewModel.bakeryPostCellViewModels) { cellViewModel in
+                                BakeryPostCell(viewModel: cellViewModel)
+                                    .listRowBackground(Color.clear)
                             }
-                        case .favorites:
-                            VStack(spacing: 8) {
-                                ForEach(breadPosts, id: \.bread.name) { viewModel in
-                                    BakeryRankingCell(viewModel: viewModel)
-                                }
-                                if breadPosts.isEmpty {
-                                    Text("No favorites yet.")
-                                        .foregroundColor(.gray)
-                                        .padding()
-                                }
-                            }
-                        case .places:
-                            VStack {
-                                Text("Places")
-                                    .font(.title3)
-                                    .foregroundColor(.gray)
-                                    .padding()
-                            }
+                        }
+                    case .favorites:
+                        VStack {
+                            Text("Favorites")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                                .padding()
+                        }
+                    case .places:
+                        VStack {
+                            Text("Places")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                                .padding()
+                        }
                     }
                 }
                 .animation(.easeInOut, value: selectedSegment)
             }
-            .padding(.horizontal)
         }
+        .sheet(isPresented: $isShowEditProfile) {
+            EditProfileView(viewModel: viewModel.editProfileViewModel)
+        }
+        .padding(.horizontal)
         .background(Color.creme.ignoresSafeArea())
         .navigationTitle("My Page")
         .navigationBarTitleDisplayMode(.inline)
     }
-}
-
-#Preview {
-    MyPageView()
 }

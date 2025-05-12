@@ -1,0 +1,13 @@
+mutation EditProfile(
+  $name: String!
+  $id: uuid!
+  $description: String!
+  $avatarUrl: String!
+) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { avatarUrl: $avatarUrl, description: $description, name: $name }
+  ) {
+    id
+  }
+}

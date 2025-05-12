@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		F84491952D4F778C00EDA7EF /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = F84491942D4F778C00EDA7EF /* GoogleMaps */; };
+		F8E616EF2DC6E14800B90AAB /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = F8E616EE2DC6E14800B90AAB /* Apollo */; };
+		F8E616F32DC6E14800B90AAB /* ApolloAPI in Frameworks */ = {isa = PBXBuildFile; productRef = F8E616F22DC6E14800B90AAB /* ApolloAPI */; };
+		F8E616F52DC6E14800B90AAB /* ApolloSQLite in Frameworks */ = {isa = PBXBuildFile; productRef = F8E616F42DC6E14800B90AAB /* ApolloSQLite */; };
+		F8E616F72DC6E14800B90AAB /* ApolloTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = F8E616F62DC6E14800B90AAB /* ApolloTestSupport */; };
+		F8E61B0E2DCDEDC100B90AAB /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = F8E61B0D2DCDEDC100B90AAB /* FirebaseCore */; };
+		F8E61B102DCDEDC100B90AAB /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = F8E61B0F2DCDEDC100B90AAB /* FirebaseStorage */; };
+		F8E61BFB2DD1AE2500B90AAB /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = F8E61BFA2DD1AE2500B90AAB /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +77,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F84491952D4F778C00EDA7EF /* GoogleMaps in Frameworks */,
+				F8E616EF2DC6E14800B90AAB /* Apollo in Frameworks */,
+				F8E616F52DC6E14800B90AAB /* ApolloSQLite in Frameworks */,
+				F8E616F72DC6E14800B90AAB /* ApolloTestSupport in Frameworks */,
+				F8E61B102DCDEDC100B90AAB /* FirebaseStorage in Frameworks */,
+				F8E61B0E2DCDEDC100B90AAB /* FirebaseCore in Frameworks */,
+				F8E616F32DC6E14800B90AAB /* ApolloAPI in Frameworks */,
+				F8E61BFB2DD1AE2500B90AAB /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +153,13 @@
 			name = Panform;
 			packageProductDependencies = (
 				F84491942D4F778C00EDA7EF /* GoogleMaps */,
+				F8E616EE2DC6E14800B90AAB /* Apollo */,
+				F8E616F22DC6E14800B90AAB /* ApolloAPI */,
+				F8E616F42DC6E14800B90AAB /* ApolloSQLite */,
+				F8E616F62DC6E14800B90AAB /* ApolloTestSupport */,
+				F8E61B0D2DCDEDC100B90AAB /* FirebaseCore */,
+				F8E61B0F2DCDEDC100B90AAB /* FirebaseStorage */,
+				F8E61BFA2DD1AE2500B90AAB /* FirebaseAuth */,
 			);
 			productName = Panform;
 			productReference = F80B64112D33F31700C067D2 /* Panform.app */;
@@ -224,6 +245,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F84491902D4F735A00EDA7EF /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				F8E616ED2DC6E14800B90AAB /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				F8E61B0C2DCDEDC100B90AAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F80B64122D33F31700C067D2 /* Products */;
@@ -596,6 +619,22 @@
 				minimumVersion = 9.3.0;
 			};
 		};
+		F8E616ED2DC6E14800B90AAB /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.21.0;
+			};
+		};
+		F8E61B0C2DCDEDC100B90AAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -603,6 +642,41 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F84491902D4F735A00EDA7EF /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
 			productName = GoogleMaps;
+		};
+		F8E616EE2DC6E14800B90AAB /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E616ED2DC6E14800B90AAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+		F8E616F22DC6E14800B90AAB /* ApolloAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E616ED2DC6E14800B90AAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = ApolloAPI;
+		};
+		F8E616F42DC6E14800B90AAB /* ApolloSQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E616ED2DC6E14800B90AAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = ApolloSQLite;
+		};
+		F8E616F62DC6E14800B90AAB /* ApolloTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E616ED2DC6E14800B90AAB /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = ApolloTestSupport;
+		};
+		F8E61B0D2DCDEDC100B90AAB /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E61B0C2DCDEDC100B90AAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		F8E61B0F2DCDEDC100B90AAB /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E61B0C2DCDEDC100B90AAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		F8E61BFA2DD1AE2500B90AAB /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8E61B0C2DCDEDC100B90AAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

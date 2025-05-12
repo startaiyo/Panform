@@ -14,5 +14,5 @@ struct UserModel {
     let name: String
     let email: String
     let description: String
-    let avatarURL: URL
+    let avatarURL: URL?
 }

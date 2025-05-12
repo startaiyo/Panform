@@ -1,0 +1,10 @@
+query GetCurrentUserInfo($uid: String!) {
+  users(where: { uid: { _eq: $uid } }) {
+    avatarUrl
+    description
+    email
+    id
+    name
+    uid
+  }
+}

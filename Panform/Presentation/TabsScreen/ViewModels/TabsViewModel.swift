@@ -14,10 +14,13 @@ protocol TabsViewModelProtocol: ObservableObject {
 final class TabsViewModel: TabsViewModelProtocol {
     @Published var searchViewModel: SearchViewModel
     @Published var savedViewModel: SavedViewModel
+    @Published var myPageViewModel: MyPageViewModel
 
     init(searchViewModel: SearchViewModel,
-         savedViewModel: SavedViewModel) {
+         savedViewModel: SavedViewModel,
+         myPageViewModel: MyPageViewModel) {
         self.searchViewModel = searchViewModel
         self.savedViewModel = savedViewModel
+        self.myPageViewModel = myPageViewModel
     }
 }

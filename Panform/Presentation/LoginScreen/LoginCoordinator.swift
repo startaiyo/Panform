@@ -10,10 +10,12 @@ import SwiftUI
 final class LoginCoordinator: Coordinator {
     private let navigationController: UINavigationController
     private let tabsCoordinator: TabsCoordinator
+    private let authNetworkService = AuthNetworkService.shared
 
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController,
+         tabsCoordinator: TabsCoordinator) {
         self.navigationController = navigationController
-        self.tabsCoordinator = TabsCoordinator(navigationController: navigationController)
+        self.tabsCoordinator = tabsCoordinator
     }
 
     func start() {
@@ -24,7 +26,8 @@ final class LoginCoordinator: Coordinator {
 // MARK: Private functions
 private extension LoginCoordinator {
     func showLoginScreen() {
-        let viewModel = LoginViewModel(onLoginSuccess: { [weak self] in
+        let viewModel = LoginViewModel(authNetworkService: authNetworkService,
+                                       onLoginSuccess: { [weak self] in
             self?.showTabsScreen()
         })
         let viewController = UIHostingController(rootView: LoginView(viewModel: viewModel))

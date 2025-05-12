@@ -1,0 +1,33 @@
+query GetUserBreadReviews($userId: uuid!) {
+  bakeries(
+    where: {
+      breads: {
+        _or: {
+          breadPhotos: { userId: { _eq: $userId } }
+          breadReviews: { userId: { _eq: $userId } }
+        }
+      }
+    }
+  ) {
+    breads {
+      breadPhotos {
+        breadId
+        id
+        imageUrl
+        userId
+      }
+      breadReviews {
+        breadId
+        comment
+        id
+        rate
+        userId
+      }
+      bakeryId
+      id
+      name
+      price
+    }
+    id
+  }
+}

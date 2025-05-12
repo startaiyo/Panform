@@ -1,0 +1,19 @@
+mutation InsertUserInfo(
+  $avatarUrl: String
+  $description: String!
+  $email: String!
+  $name: String!
+  $uid: String!
+) {
+  insert_users_one(
+    object: {
+      email: $email
+      uid: $uid
+      name: $name
+      description: $description
+      avatarUrl: $avatarUrl
+    }
+  ) {
+    id
+  }
+}

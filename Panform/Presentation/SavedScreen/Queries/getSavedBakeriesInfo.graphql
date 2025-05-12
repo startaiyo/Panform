@@ -1,0 +1,28 @@
+query GetSavedBakeriesInfo($breadIds: [uuid!]) {
+  bakeries(where: { breads: { id: { _in: $breadIds } } }) {
+    name
+    breads(where: { id: { _in: $breadIds } }) {
+      name
+      price
+      id
+      breadPhotos {
+        imageUrl
+        id
+        userId
+      }
+      breadReviews {
+        id
+        comment
+        rate
+        userId
+      }
+    }
+    id
+    latitude
+    longitude
+    memo
+    openAt
+    openingDays
+    closeAt
+  }
+}

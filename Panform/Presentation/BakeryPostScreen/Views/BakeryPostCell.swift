@@ -20,23 +20,33 @@ struct BakeryPostCell: View {
 
                     Spacer()
 
-                    HStack(spacing: 8) {
+                    if viewModel.didRequestToAddReview != nil {
                         Button(action: {
-                            // Handle edit action
+                            viewModel.addReview(of: bread)
                         }) {
-                            Image(systemName: "pencil")
+                            Text("Add new review")
+                                .font(.headline)
                                 .foregroundColor(.white)
                         }
-                        .buttonStyle(PlainButtonStyle())
-
-                        Button(action: {
-                            // Handle delete action
-                        }) {
-                            Image(systemName: "trash")
-                                .foregroundColor(.white)
-                        }
-                        .buttonStyle(PlainButtonStyle())
                     }
+
+//                    HStack(spacing: 8) {
+//                        Button(action: {
+//                            // Handle edit action
+//                        }) {
+//                            Image(systemName: "pencil")
+//                                .foregroundColor(.white)
+//                        }
+//                        .buttonStyle(PlainButtonStyle())
+//
+//                        Button(action: {
+//                            // Handle delete action
+//                        }) {
+//                            Image(systemName: "trash")
+//                                .foregroundColor(.white)
+//                        }
+//                        .buttonStyle(PlainButtonStyle())
+//                    }
                 }
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -62,7 +72,17 @@ struct BakeryPostCell: View {
                     }
                     .fixedSize(horizontal: true, vertical: false)
                 }
-                
+
+                HStack {
+                    Text("Price")
+                        .font(.subheadline)
+                        .bold()
+
+                    Spacer()
+
+                    Text("\(viewModel.bread?.price ?? 0)円")
+                        .font(.headline)
+                }
 
                 HStack(alignment: .top) {
                     Text("Comment")
