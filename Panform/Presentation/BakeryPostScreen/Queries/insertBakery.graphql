@@ -1,0 +1,17 @@
+mutation InsertBakery(
+  $latitude: float8!
+  $longitude: float8!
+  $name: String!
+  $placeId: String!
+) {
+  insert_bakeries_one(
+    object: {
+      latitude: $latitude
+      longitude: $longitude
+      name: $name
+      placeId: $placeId
+    }
+  ) {
+    id
+  }
+}

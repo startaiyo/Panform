@@ -12,10 +12,10 @@ protocol SavedBakeryBreadCellViewModelProtocol: ObservableObject {
 }
 
 final class SavedBakeryBreadCellViewModel: SavedBakeryBreadCellViewModelProtocol, Identifiable  {
-    let bread: BreadModel?
+    let bread: BreadModel
     let savedBread: SavedBread
 
-    init(bread: BreadModel?,
+    init(bread: BreadModel,
          savedBread: SavedBread) {
         self.bread = bread
         self.savedBread = savedBread

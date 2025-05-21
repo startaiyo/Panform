@@ -92,7 +92,7 @@ struct BakeryPostDraftCell: View {
                         .multilineTextAlignment(.trailing)
                         .textFieldStyle(PlainTextFieldStyle())
                         .frame(width: 80)
-                    Text("円")
+                    Text("Yen")
                 }
 
                 // Comment Input

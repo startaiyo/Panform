@@ -7,5 +7,6 @@ query GetBakeriesInfo {
     longitude
     latitude
     closeAt
+    placeId
   }
 }

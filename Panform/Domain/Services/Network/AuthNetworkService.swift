@@ -31,6 +31,7 @@ protocol AuthNetworkServiceProtocol {
     func uploadProfileImage(of userID: UserID,
                             imageData: Data,
                             completion: @escaping (URL) -> Void)
+    func deleteAccount(completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 final class AuthNetworkService {
@@ -182,6 +183,16 @@ extension AuthNetworkService: AuthNetworkServiceProtocol {
             imageRef.downloadURL { url, error in
                 guard let url else { return }
                 completion(url)
+            }
+        }
+    }
+
+    func deleteAccount(completion: @escaping (Result<Void, any Error>) -> Void) {
+        auth.currentUser?.delete { error in
+            if let error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
             }
         }
     }

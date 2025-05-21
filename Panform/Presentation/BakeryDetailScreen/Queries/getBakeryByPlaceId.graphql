@@ -1,0 +1,13 @@
+query GetBakeryByPlaceId($placeId: String!) {
+  bakeries(where: { placeId: { _eq: $placeId } }) {
+    name
+    placeId
+    id
+    openingDays
+    openAt
+    name
+    longitude
+    latitude
+    closeAt
+  }
+}

@@ -28,8 +28,7 @@ struct LoginView: View {
                     TextField("email",
                               text: $viewModel.email)
                         .frame(height: 30)
-                    TextField("password",
-                              text: $viewModel.password)
+                    SecureField("password", text: $viewModel.password)
                         .frame(height: 30)
                 }
                     .padding()
@@ -39,14 +38,19 @@ struct LoginView: View {
                 Button {
                     viewModel.login()
                 } label: {
-                    Text("Login")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .padding()
-                        .foregroundStyle(.white)
+                    if viewModel.shouldShowLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(width: 140, height: 40)
+                    } else {
+                        Text("Login")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .frame(width: 140, height: 40)
+                            .foregroundStyle(.white)
+                    }
                 }
-                    .frame(width: 140,
-                           height:40)
+                    .disabled(viewModel.shouldShowLoading)
                     .background(Color.darkPink)
                     .cornerRadius(30)
                     .padding()

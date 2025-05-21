@@ -54,7 +54,7 @@ struct SavedBakeryCell: View {
                     }
 
                     if let breadPrice = viewModel.breads.first?.price {
-                        Text(String(format: "¥%.0f", breadPrice))
+                        Text("¥ \(breadPrice)")
                             .font(.subheadline)
                     }
 

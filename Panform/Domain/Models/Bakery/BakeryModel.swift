@@ -13,11 +13,11 @@ typealias BakeryID = UUID
 struct BakeryModel {
     let id: BakeryID
     let name: String
-    let memo: String
-    let openAt: TimeOnly
-    let closeAt: TimeOnly
-    let openingDays: [WeekDay]
+    let openAt: TimeOnly?
+    let closeAt: TimeOnly?
+    let openingDays: [WeekDay]?
     let location: CLLocation
+    let placeID: String
 }
 
 struct TimeOnly: Codable, Equatable {
@@ -35,6 +35,20 @@ struct TimeOnly: Codable, Equatable {
     var formatted: String {
         String(format: "%02d:%02d", hour, minute)
     }
+
+    init?(from date: Date) {
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: date)
+        let minute = calendar.component(.minute, from: date)
+        self.init(hour: hour, minute: minute)
+    }
+
+    func toDate() -> Date? {
+        var components = DateComponents()
+        components.hour = self.hour
+        components.minute = self.minute
+        return Calendar.current.date(from: components)
+    }
 }
 
 enum WeekDay: String, Codable, CaseIterable {
@@ -45,13 +59,13 @@ extension BakeryModel {
     static func stub() -> BakeryModel {
         return .init(id: UUID(),
                      name: "name",
-                     memo: "memo",
                      openAt: .init(hour: 8,
                                    minute: 0)!,
                      closeAt: .init(hour: 16,
                                     minute: 0)!,
                      openingDays: [.mon, .tue],
                      location: .init(latitude: 50,
-                                     longitude: 90))
+                                     longitude: 90),
+                     placeID: "")
     }
 }

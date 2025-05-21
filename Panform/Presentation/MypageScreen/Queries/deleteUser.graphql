@@ -1,0 +1,5 @@
+mutation deleteUser($uid: String!) {
+  delete_users(where: { uid: { _eq: $uid } }) {
+    affected_rows
+  }
+}

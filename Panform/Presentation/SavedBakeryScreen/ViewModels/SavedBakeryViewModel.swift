@@ -35,7 +35,8 @@ private extension SavedBakeryViewModel {
     func getBakeryData() {
         breads = []
         savedBreads = bakeryStorageService.getSavedBreads()
-        apolloClient.apollo.fetch(query: Panform.GetBakeryDataQuery(bakeryID: bakeryID.uuidString)) { [weak self] result in
+        apolloClient.apollo.fetch(query: Panform.GetBakeryDataQuery(bakeryID: bakeryID.uuidString),
+                                  cachePolicy: .fetchIgnoringCacheCompletely) { [weak self] result in
             guard let self,
                   let bakery = try? result.get().data?.bakeries.first
             else {
@@ -57,9 +58,13 @@ private extension SavedBakeryViewModel {
 // MARK: - Outputs
 extension SavedBakeryViewModel {
     var savedBakeryBreadCellViewModels: [SavedBakeryBreadCellViewModel] {
-        return savedBreads.map { savedBread in
-                .init(bread: breads.first(where: { savedBread.breadID == $0.id }),
-                      savedBread: savedBread)
+        return savedBreads.compactMap { savedBread in
+            if let bread = breads.first(where: { savedBread.breadID == $0.id }) {
+                return .init(bread: bread,
+                             savedBread: savedBread)
+            } else {
+                return nil
+            }
         }
     }
 }

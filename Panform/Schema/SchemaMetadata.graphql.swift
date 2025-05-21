@@ -36,6 +36,7 @@ extension Panform {
       case "mutation_root": return Panform.Objects.Mutation_root
       case "query_root": return Panform.Objects.Query_root
       case "users": return Panform.Objects.Users
+      case "users_mutation_response": return Panform.Objects.Users_mutation_response
       default: return nil
       }
     }

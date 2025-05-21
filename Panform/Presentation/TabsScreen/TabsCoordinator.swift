@@ -32,8 +32,8 @@ final class TabsCoordinator: Coordinator {
 private extension TabsCoordinator {
     func showTabsScreen() {
         let searchViewModel = SearchViewModel(apolloClient: graphQLClient,
-                                              didRequestToShowBakeryDetail: { [weak self] bakery in
-            self?.didRequestToShowBakeryDetail(bakery)
+                                              didRequestToShowBakeryDetail: { [weak self] place, bakery in
+            self?.didRequestToShowBakeryDetail(place, andBakery: bakery)
         })
         let savedViewModel = SavedViewModel(apolloClient: GraphQLClient.shared,
                                             bakeryStorageService: BakeryStorageService(),
@@ -53,8 +53,9 @@ private extension TabsCoordinator {
                                                 animated: false)
     }
 
-    func didRequestToShowBakeryDetail(_ bakery: BakeryModel) {
+    func didRequestToShowBakeryDetail(_ place: Place, andBakery bakery: BakeryModel?) {
         let bakeryDetailCoordinator = BakeryDetailCoordinator(navigationController: navigationController,
+                                                              place: place,
                                                               bakery: bakery)
         self.bakeryDetailCoordinator = bakeryDetailCoordinator
         bakeryDetailCoordinator.start()

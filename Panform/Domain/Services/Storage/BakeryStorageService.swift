@@ -8,7 +8,7 @@
 import SwiftData
 
 protocol BakeryStorageServiceProtocol {
-    func fetchBakeryPostDrafts() -> [BakeryPostDraft]
+    func fetchBakeryPostDrafts(of placeID: String) -> [BakeryPostDraft]
     func insertBakeryPostDraft(_ bakeryPost: BakeryPostDraft)
     func deleteBakeryPostDraft(_ bakeryPost: BakeryPostDraft)
     func updateBakeryPostDraft()
@@ -16,6 +16,7 @@ protocol BakeryStorageServiceProtocol {
     func getSavedBreads() -> [SavedBread]
     func unsaveBread(_ bread: SavedBread)
     func updateSavedBread()
+    func resetData(completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 final class BakeryStorageService: BakeryStorageServiceProtocol {
@@ -37,10 +38,10 @@ final class BakeryStorageService: BakeryStorageServiceProtocol {
         }
     }
 
-    func fetchBakeryPostDrafts() -> [BakeryPostDraft] {
+    func fetchBakeryPostDrafts(of placeID: String) -> [BakeryPostDraft] {
         let postDrafts = (try? context?.fetch(FetchDescriptor<BakeryPostDraft>())) ?? []
         return postDrafts.filter {
-            $0.uid == authNetworkService.currentUser?.uid
+            $0.uid == authNetworkService.currentUser?.uid && $0.placeID == placeID
         }
     }
 
@@ -77,5 +78,26 @@ final class BakeryStorageService: BakeryStorageServiceProtocol {
 
     func updateSavedBread() {
         try? context?.save()
+    }
+
+    func resetData(completion: @escaping (Result<Void, Error>) -> Void) {
+        do {
+            let postDrafts = (try? context?.fetch(FetchDescriptor<BakeryPostDraft>()))?.filter {
+                $0.uid == authNetworkService.currentUser?.uid
+            }
+            let savedBreads = (try? context?.fetch(FetchDescriptor<SavedBread>()))?.filter {
+                $0.uid == authNetworkService.currentUser?.uid
+            }
+            postDrafts?.forEach {
+                context?.delete($0)
+            }
+            savedBreads?.forEach {
+                context?.delete($0)
+            }
+            try context?.save()
+            completion(.success(()))
+        } catch {
+            completion(.failure(error))
+        }
     }
 }

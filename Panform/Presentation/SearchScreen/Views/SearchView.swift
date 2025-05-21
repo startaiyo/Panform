@@ -23,14 +23,10 @@ struct SearchView: View {
             })
             MapView(searchQuery: $searchQuery,
                     bakeries: $viewModel.bakeries,
-                    onTap: { bakery in
-                viewModel.showDetail(of: bakery)
+                    onTap: { place, bakery in
+                viewModel.showDetail(of: place, andBakery: bakery)
             })
                 .edgesIgnoringSafeArea(.all)
         }
     }
-}
-
-#Preview {
-    SearchView(viewModel: SearchViewModel(apolloClient: GraphQLClient.shared, didRequestToShowBakeryDetail: { _ in }))
 }

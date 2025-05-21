@@ -17,6 +17,7 @@ final class SignUpViewModel: SignUpViewModelProtocol {
     @Published var name = ""
     @Published var email = ""
     @Published var password = ""
+    @Published var shouldShowLoading = false
     private let authNetworkService: AuthNetworkService
 
     init(authNetworkService: AuthNetworkService) {
@@ -33,6 +34,7 @@ final class SignUpViewModel: SignUpViewModelProtocol {
                     }
                 case .failure(let error):
                     print(error)
+                    self?.shouldShowLoading = false
             }
         }
     }
@@ -41,15 +43,17 @@ final class SignUpViewModel: SignUpViewModelProtocol {
 private extension SignUpViewModel {
     func createUserInfo(of uid: String,
                         onSuccess: @escaping () -> Void) {
+        shouldShowLoading = true
         authNetworkService.createUserInfo(uid: uid,
                                           email: email,
-                                          name: name) { result in
+                                          name: name) { [weak self] result in
             switch result {
                 case .success:
                     onSuccess()
                 case .failure(let error):
                     print(error)
             }
+            self?.shouldShowLoading = false
         }
     }
 }

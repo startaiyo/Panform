@@ -20,9 +20,9 @@ query GetSavedBakeriesInfo($breadIds: [uuid!]) {
     id
     latitude
     longitude
-    memo
     openAt
     openingDays
     closeAt
+    placeId
   }
 }

@@ -17,6 +17,7 @@ protocol LoginViewModelProtocol: ObservableObject {
 final class LoginViewModel: LoginViewModelProtocol {
     @Published var email = ""
     @Published var password = ""
+    @Published var shouldShowLoading = false
     private let authNetworkService: AuthNetworkService
     private let onLoginSuccess: () -> Void
 
@@ -27,6 +28,7 @@ final class LoginViewModel: LoginViewModelProtocol {
     }
 
     func login() {
+        shouldShowLoading = true
         authNetworkService.login(email: email,
                                  password: password) { [weak self] result in
             switch result {
@@ -35,6 +37,7 @@ final class LoginViewModel: LoginViewModelProtocol {
                 case .failure(let error):
                     print(error)
             }
+            self?.shouldShowLoading = false
         }
     }
 }

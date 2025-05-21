@@ -17,31 +17,38 @@ final class BakeryPostViewModel: BakeryPostViewModelProtocol {
     @Published var breadReviews: [BreadReviewModel] = []
     @Published var breadPhotos: [BreadPhotoModel] = []
     @Published var bakeryPostDrafts: [BakeryPostDraft] = []
+    @Published var shouldShowLoading = false
 
-    private let bakeryID: BakeryID
     private let apolloClient: GraphQLClient
+    private var place: Place
+    private var bakeryID: BakeryID?
     let authNetworkService: AuthNetworkServiceProtocol
     let bakeryStorageService: BakeryStorageServiceProtocol
     let bakeryNetworkService: BakeryNetworkServiceProtocol
 
-    init(bakeryID: BakeryID,
-         apolloClient: GraphQLClient,
+    init(apolloClient: GraphQLClient,
+         bakery: BakeryModel?,
+         place: Place,
          authNetworkService: AuthNetworkServiceProtocol,
          bakeryStorageService: BakeryStorageServiceProtocol,
          bakeryNetworkService: BakeryNetworkServiceProtocol) {
-        self.bakeryID = bakeryID
         self.apolloClient = apolloClient
         self.authNetworkService = authNetworkService
         self.bakeryStorageService = bakeryStorageService
         self.bakeryNetworkService = bakeryNetworkService
-        getBakeryData()
+        self.place = place
+        bakeryID = bakery?.id
+        getBakeryData(bakeryID: bakeryID)
         reloadDrafts()
     }
 
     func addNewPost(for bread: BreadModel?) {
-        guard let uid = authNetworkService.currentUser?.uid else { return }
+        guard let uid = authNetworkService.currentUser?.uid
+        else {
+            return
+        }
         let newDraft = BakeryPostDraft(id: UUID(),
-                                       bakeryID: bakeryID,
+                                       placeID: place.placeID,
                                        breadID: bread?.id,
                                        breadName: bread?.name ?? "",
                                        score: 1.0,
@@ -51,27 +58,30 @@ final class BakeryPostViewModel: BakeryPostViewModelProtocol {
                                        uid: uid)
         bakeryStorageService.insertBakeryPostDraft(newDraft)
         reloadDrafts()
+        getBakeryData(bakeryID: bakeryID)
     }
 }
 
 // MARK: - Private functions
 private extension BakeryPostViewModel {
-    func getBakeryData() {
+    func getBakeryData(bakeryID: BakeryID?) {
         breads = []
         breadPhotos = []
         breadReviews = []
-        apolloClient.apollo.fetch(query: Panform.GetBakeryDataQuery(bakeryID: bakeryID.uuidString)) { [weak self] result in
+        guard let bakeryID else { return }
+        apolloClient.apollo.fetch(query: Panform.GetBakeryDataQuery(bakeryID: bakeryID.uuidString),
+                                  cachePolicy: .fetchIgnoringCacheCompletely) { [weak self] result in
             guard let self,
-                  let bakery = try? result.get().data?.bakeries.first
+                  let bakeryData = try? result.get().data?.bakeries.first
             else {
                 return
             }
-            bakery.breads.forEach { bread in
+            bakeryData.breads.forEach { bread in
                 if let breadID = UUID(uuidString: bread.id) {
                     self.breads.append(.init(id: breadID,
                                              name: bread.name,
                                              price: bread.price,
-                                             bakeryID: self.bakeryID))
+                                             bakeryID: bakeryID))
                     bread.breadPhotos.forEach {
                         if let breadPhotoID = UUID(uuidString: $0.id),
                            let userID = UUID(uuidString: $0.userId),
@@ -99,11 +109,17 @@ private extension BakeryPostViewModel {
     }
 
     func reloadDrafts() {
-        bakeryPostDrafts = bakeryStorageService.fetchBakeryPostDrafts()
+        bakeryPostDrafts = bakeryStorageService.fetchBakeryPostDrafts(of: place.placeID)
     }
 
     func postReviews(of bakeryPostDraft: BakeryPostDraft) {
-        Task {
+        shouldShowLoading = true
+        Task { [weak self] in
+            guard let self else { return }
+            if bakeryID == nil {
+                bakeryID = try await insertBakery(of: place)
+            }
+
             guard let userID = authNetworkService.currentPanformUserID else { return }
             let imageURLs = try await uploadImage(of: bakeryPostDraft)
             let imageInputs = imageURLs.map { imageURL in Panform.BreadPhotos_insert_input(imageUrl: .some(imageURL.absoluteString), userId: .some(userID.uuidString)) }
@@ -111,7 +127,7 @@ private extension BakeryPostViewModel {
 
             let mutation = Panform.UpsertBreadPostMutation(
                 breadID: breadID,
-                bakeryID: bakeryPostDraft.bakeryID.uuidString,
+                bakeryID: bakeryID!.uuidString,
                 name: bakeryPostDraft.breadName,
                 price: bakeryPostDraft.price,
                 comment: bakeryPostDraft.comment,
@@ -120,20 +136,50 @@ private extension BakeryPostViewModel {
                 imageUrls: imageInputs
             )
 
-            apolloClient.apollo.perform(mutation: mutation) { [weak self] result in
+            apolloClient.apollo.perform(mutation: mutation) { result in
                 switch result {
                 case .success(let graphQLResult):
                     if let idString = graphQLResult.data?.insert_breads_one?.id,
                        let id = UUID(uuidString: idString) {
                         print(id.uuidString + "inserted")
-                        self?.bakeryStorageService.deleteBakeryPostDraft(bakeryPostDraft)
-                        self?.reloadDrafts()
-                        self?.getBakeryData()
+                        self.bakeryStorageService.deleteBakeryPostDraft(bakeryPostDraft)
+                        self.reloadDrafts()
+                        self.getBakeryData(bakeryID: self.bakeryID!)
                     } else if let errors = graphQLResult.errors {
                         print(errors)
                     }
                 case .failure(let error):
                     print(error)
+                }
+                self.shouldShowLoading = false
+            }
+        }
+    }
+
+    func insertBakery(of place: Place) async throws -> BakeryID {
+        return try await withCheckedThrowingContinuation { continuation in
+            guard let latitude = place.geometry?.location.lat,
+                  let longitude = place.geometry?.location.lng
+            else {
+                return
+            }
+            let mutation = Panform.InsertBakeryMutation(latitude: String(latitude),
+                                                        longitude: String(longitude),
+                                                        name: place.name,
+                                                        placeId: place.placeID)
+            apolloClient.apollo.perform(mutation: mutation) { result in
+                switch result {
+                case .success(let graphQLResult):
+                    if let idString = graphQLResult.data?.insert_bakeries_one?.id,
+                       let bakeryID = UUID(uuidString: idString) {
+                        continuation.resume(returning: bakeryID)
+                    } else if let error = graphQLResult.errors?.first {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(throwing: NSError())
+                    }
+                case .failure(let error):
+                    continuation.resume(throwing: error)
                 }
             }
         }

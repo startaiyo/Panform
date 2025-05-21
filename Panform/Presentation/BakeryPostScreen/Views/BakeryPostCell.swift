@@ -80,7 +80,7 @@ struct BakeryPostCell: View {
 
                     Spacer()
 
-                    Text("\(viewModel.bread?.price ?? 0)円")
+                    Text("\(viewModel.bread?.price ?? 0) Yen")
                         .font(.headline)
                 }
 

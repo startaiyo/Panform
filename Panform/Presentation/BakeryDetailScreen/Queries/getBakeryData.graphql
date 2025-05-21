@@ -1,6 +1,14 @@
 query GetBakeryData($bakeryID: uuid!) {
   bakeries(where: { id: { _eq: $bakeryID } }) {
     name
+    placeId
+    id
+    openingDays
+    openAt
+    name
+    longitude
+    latitude
+    closeAt
     breads {
       id
       name

@@ -40,26 +40,27 @@ private extension SavedViewModel {
         breadReviews = []
         savedBreads = bakeryStorageService.getSavedBreads()
         let savedBreadIds = savedBreads.map { $0.breadID.uuidString }
-        apolloClient.apollo.fetch(query: Panform.GetSavedBakeriesInfoQuery(breadIds: .some(savedBreadIds))) { result in
+        apolloClient.apollo.fetch(query: Panform.GetSavedBakeriesInfoQuery(breadIds: .some(savedBreadIds)),
+                                  cachePolicy: .fetchIgnoringCacheCompletely) { result in
             let data = try? result.get().data?.bakeries
             data?.forEach {
                 guard let id = UUID(uuidString: $0.id),
-                      let openAt = TimeOnly(hour: $0.openAt, minute: 0),
-                      let closeAt = TimeOnly(hour: $0.closeAt, minute: 0),
                       let latitude = Double($0.latitude),
                       let longitude = Double($0.longitude) else {
                     return
                 }
                 self.bakeries.append(BakeryModel(id: id,
                                                  name: $0.name,
-                                                 memo: "",
-                                                 openAt: openAt,
-                                                 closeAt: closeAt,
-                                                 openingDays: $0.openingDays.compactMap { day in
+                                                 openAt: $0.openAt == nil ? nil : .init(hour: $0.openAt!,
+                                                                                        minute: 0),
+                                                 closeAt: $0.closeAt == nil ? nil : .init(hour: $0.closeAt!,
+                                                                                          minute: 0),
+                                                 openingDays: $0.openingDays?.compactMap { day in
                         .init(rawValue: day)
-                },
+                } ?? [],
                                                  location: .init(latitude: latitude,
-                                                                 longitude: longitude)))
+                                                                 longitude: longitude),
+                                                 placeID: $0.placeId))
                 let bakery = $0
                 bakery.breads.forEach { bread in
                     if let breadID = UUID(uuidString: bread.id),

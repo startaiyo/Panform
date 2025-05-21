@@ -8,7 +8,7 @@ extension Panform {
     static let operationName: String = "GetBakeryData"
     static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query GetBakeryData($bakeryID: uuid!) { bakeries(where: { id: { _eq: $bakeryID } }) { __typename name breads { __typename id name price breadReviews { __typename comment rate id userId } breadPhotos { __typename imageUrl id userId } } } }"#
+        #"query GetBakeryData($bakeryID: uuid!) { bakeries(where: { id: { _eq: $bakeryID } }) { __typename name placeId id openingDays openAt name longitude latitude closeAt breads { __typename id name price breadReviews { __typename comment rate id userId } breadPhotos { __typename imageUrl id userId } } } }"#
       ))
 
     public var bakeryID: Uuid
@@ -42,10 +42,24 @@ extension Panform {
         static var __selections: [ApolloAPI.Selection] { [
           .field("__typename", String.self),
           .field("name", String.self),
+          .field("placeId", String.self),
+          .field("id", Panform.Uuid.self),
+          .field("openingDays", [String]?.self),
+          .field("openAt", Int?.self),
+          .field("longitude", Panform.Float8.self),
+          .field("latitude", Panform.Float8.self),
+          .field("closeAt", Int?.self),
           .field("breads", [Bread].self),
         ] }
 
         var name: String { __data["name"] }
+        var placeId: String { __data["placeId"] }
+        var id: Panform.Uuid { __data["id"] }
+        var openingDays: [String]? { __data["openingDays"] }
+        var openAt: Int? { __data["openAt"] }
+        var longitude: Panform.Float8 { __data["longitude"] }
+        var latitude: Panform.Float8 { __data["latitude"] }
+        var closeAt: Int? { __data["closeAt"] }
         /// fetch data from the table: "breads"
         var breads: [Bread] { __data["breads"] }
 

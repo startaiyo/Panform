@@ -8,7 +8,7 @@ extension Panform {
     static let operationName: String = "GetSavedBakeriesInfo"
     static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query GetSavedBakeriesInfo($breadIds: [uuid!]) { bakeries(where: { breads: { id: { _in: $breadIds } } }) { __typename name breads(where: { id: { _in: $breadIds } }) { __typename name price id breadPhotos { __typename imageUrl id userId } breadReviews { __typename id comment rate userId } } id latitude longitude memo openAt openingDays closeAt } }"#
+        #"query GetSavedBakeriesInfo($breadIds: [uuid!]) { bakeries(where: { breads: { id: { _in: $breadIds } } }) { __typename name breads(where: { id: { _in: $breadIds } }) { __typename name price id breadPhotos { __typename imageUrl id userId } breadReviews { __typename id comment rate userId } } id latitude longitude openAt openingDays closeAt placeId } }"#
       ))
 
     public var breadIds: GraphQLNullable<[Uuid]>
@@ -46,10 +46,10 @@ extension Panform {
           .field("id", Panform.Uuid.self),
           .field("latitude", Panform.Float8.self),
           .field("longitude", Panform.Float8.self),
-          .field("memo", String.self),
-          .field("openAt", Int.self),
-          .field("openingDays", [String].self),
-          .field("closeAt", Int.self),
+          .field("openAt", Int?.self),
+          .field("openingDays", [String]?.self),
+          .field("closeAt", Int?.self),
+          .field("placeId", String.self),
         ] }
 
         var name: String { __data["name"] }
@@ -58,10 +58,10 @@ extension Panform {
         var id: Panform.Uuid { __data["id"] }
         var latitude: Panform.Float8 { __data["latitude"] }
         var longitude: Panform.Float8 { __data["longitude"] }
-        var memo: String { __data["memo"] }
-        var openAt: Int { __data["openAt"] }
-        var openingDays: [String] { __data["openingDays"] }
-        var closeAt: Int { __data["closeAt"] }
+        var openAt: Int? { __data["openAt"] }
+        var openingDays: [String]? { __data["openingDays"] }
+        var closeAt: Int? { __data["closeAt"] }
+        var placeId: String { __data["placeId"] }
 
         /// Bakery.Bread
         ///

@@ -15,36 +15,47 @@ struct BakeryPostView: View {
     }
 
     var body: some View {
-        VStack {
-            List {
-                ForEach(viewModel.bakeryPostCellViewModels) { cellViewModel in
-                    BakeryPostCell(viewModel: cellViewModel)
-                        .listRowBackground(Color.clear)
-                }
+        ZStack {
+            VStack {
+                List {
+                    ForEach(viewModel.bakeryPostCellViewModels) { cellViewModel in
+                        BakeryPostCell(viewModel: cellViewModel)
+                            .listRowBackground(Color.clear)
+                    }
 
-                ForEach(viewModel.bakeryPostDraftViewModels) { cellViewModel in
-                    BakeryPostDraftCell(viewModel: cellViewModel)
-                        .listRowBackground(Color.clear)
-                }
+                    ForEach(viewModel.bakeryPostDraftViewModels) { cellViewModel in
+                        BakeryPostDraftCell(viewModel: cellViewModel)
+                            .listRowBackground(Color.clear)
+                    }
 
-                Button(action: {
-                    viewModel.addNewPost(for: nil)
-                }) {
-                    Text("＋")
-                        .font(.largeTitle)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(8)
+                    Button(action: {
+                        viewModel.addNewPost(for: nil)
+                    }) {
+                        Text("＋")
+                            .font(.largeTitle)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(8)
                         
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .listRowBackground(Color.clear)
                 }
-                .buttonStyle(PlainButtonStyle())
-                .listRowBackground(Color.clear)
+                .listStyle(PlainListStyle())
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
             }
-            .listStyle(PlainListStyle())
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
+            .background(Color.creme.ignoresSafeArea())
+
+            if viewModel.shouldShowLoading {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+            }
         }
-        .background(Color.creme.ignoresSafeArea())
     }
 }

@@ -12,37 +12,44 @@ final class BakeryDetailCoordinator: Coordinator {
     private let graphQLClient = GraphQLClient.shared
     private let authNetworkService = AuthNetworkService.shared
     private let bakeryStorageService = BakeryStorageService()
-    private let bakery: BakeryModel
+    private let place: Place
+    private let bakery: BakeryModel?
 
     init(navigationController: UINavigationController,
-         bakery: BakeryModel) {
+         place: Place,
+         bakery: BakeryModel?) {
         self.navigationController = navigationController
+        self.place = place
         self.bakery = bakery
     }
 
     func start() {
-        showBakeryDetailScreen(with: bakery)
+        showBakeryDetailScreen(place,
+                               with: bakery)
     }
 }
 
 // MARK: Private functions
 private extension BakeryDetailCoordinator {
-    func showBakeryDetailScreen(with bakery: BakeryModel) {
+    func showBakeryDetailScreen(_ place: Place,
+                                with bakery: BakeryModel?) {
         let viewModel = BakeryDetailViewModel(bakery: bakery,
+                                              place: place,
                                               apolloClient: graphQLClient,
                                               authNetworkService: authNetworkService,
                                               bakeryStorageService: bakeryStorageService,
                                               didRequestToShowBakeryPost: { [weak self] in
-            self?.showBakeryPostScreen(of: bakery.id)
+            self?.showBakeryPostScreen()
         })
         let viewController = UIHostingController(rootView: BakeryDetailView(viewModel: viewModel))
         navigationController.pushViewController(viewController,
                                                 animated: true)
     }
 
-    func showBakeryPostScreen(of bakeryID: BakeryID) {
-        let bakeryPostCoordinator = BakeryPostCoordinator(navigationController: navigationController,
-                                                          bakeryID: bakeryID)
+    func showBakeryPostScreen() {
+        let bakeryPostCoordinator = BakeryPostCoordinator(bakery: bakery,
+                                                          place: place,
+                                                          navigationController:navigationController)
         bakeryPostCoordinator.start()
     }
 }

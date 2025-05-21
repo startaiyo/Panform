@@ -50,38 +50,38 @@ private extension MyPageViewModel {
                 return
             }
             apolloClient.apollo.fetch(query: Panform.GetUserBreadReviewsQuery(userId: currentUserID),
-                                      cachePolicy: .fetchIgnoringCacheCompletely) { [weak self] result in
-                guard let self,
-                      let bakery = try? result.get().data?.bakeries.first
-                else {
+                                      cachePolicy: .fetchIgnoringCacheCompletely) { result in
+                guard let bakeries = try? result.get().data?.bakeries else {
                     return
                 }
-                bakery.breads.forEach { bread in
-                    if let breadID = UUID(uuidString: bread.id),
-                       let bakeryID = UUID(uuidString: bread.bakeryId) {
-                        self.breads.append(.init(id: breadID,
-                                                 name: bread.name,
-                                                 price: bread.price,
-                                                 bakeryID: bakeryID))
-                        bread.breadPhotos.forEach {
-                            if let breadPhotoID = UUID(uuidString: $0.id),
-                               let userID = UUID(uuidString: $0.userId),
-                               let imageURL = URL(string: $0.imageUrl) {
-                                self.breadPhotos.append(.init(id: breadPhotoID,
-                                                              breadID: breadID,
-                                                              userID: userID,
-                                                              imageURL: imageURL))
+                bakeries.forEach { bakery in
+                    bakery.breads.forEach { bread in
+                        if let breadID = UUID(uuidString: bread.id),
+                           let bakeryID = UUID(uuidString: bread.bakeryId) {
+                            self.breads.append(.init(id: breadID,
+                                                     name: bread.name,
+                                                     price: bread.price,
+                                                     bakeryID: bakeryID))
+                            bread.breadPhotos.forEach {
+                                if let breadPhotoID = UUID(uuidString: $0.id),
+                                   let userID = UUID(uuidString: $0.userId),
+                                   let imageURL = URL(string: $0.imageUrl) {
+                                    self.breadPhotos.append(.init(id: breadPhotoID,
+                                                                  breadID: breadID,
+                                                                  userID: userID,
+                                                                  imageURL: imageURL))
+                                }
                             }
-                        }
-                        bread.breadReviews.forEach {
-                            if let breadReviewID = UUID(uuidString: $0.id),
-                               let userID = UUID(uuidString: $0.userId),
-                               let rate = Float($0.rate) {
-                                self.breadReviews.append(.init(id: breadReviewID,
-                                                               breadID: breadID,
-                                                               comment: $0.comment,
-                                                               userID: userID,
-                                                               rate: rate))
+                            bread.breadReviews.forEach {
+                                if let breadReviewID = UUID(uuidString: $0.id),
+                                   let userID = UUID(uuidString: $0.userId),
+                                   let rate = Float($0.rate) {
+                                    self.breadReviews.append(.init(id: breadReviewID,
+                                                                   breadID: breadID,
+                                                                   comment: $0.comment,
+                                                                   userID: userID,
+                                                                   rate: rate))
+                                }
                             }
                         }
                     }
@@ -117,8 +117,13 @@ extension MyPageViewModel {
 
     var editProfileViewModel: EditProfileViewModel {
         return .init(authNetworkService: authNetworkService,
+                     apolloClient: apolloClient,
+                     bakeryStorageService: BakeryStorageService(),
                      onDismiss: { [weak self] in
             self?.updateCurrentUser()
+        },
+                     onDeleteAccount: { [weak self] in
+            self?.onLoggedOut()
         })
     }
 

@@ -33,41 +33,50 @@ struct TabsView: View {
     }
 
     var body: some View {
-        NavigationView {
-            TabView(selection: $selectedTab) {
+        TabView(selection: $selectedTab) {
+            NavigationStack {
                 SearchView(viewModel: viewModel.searchViewModel)
-                    .tabItem {
-                        Image(systemName: "magnifyingglass")
-                        Text("Search")
-                    }
-                    .tag(Tab.search)
-                SavedView(viewModel: viewModel.savedViewModel)
-                    .tabItem {
-                        Image(systemName: "bookmark.fill")
-                        Text("Saved")
-                    }
-                    .tag(Tab.saved)
-                MyPageView(viewModel: viewModel.myPageViewModel)
-                    .tabItem {
-                        Image(systemName: "person.fill")
-                        Text("MyPage")
-                    }
-                    .tag(Tab.myPage)
+                    .navigationTitle("Panform")
+                    .navigationBarTitleDisplayMode(.inline)
             }
-            .accentColor(.darkPink)
-            .navigationTitle("Panform")
-            .navigationBarTitleDisplayMode(.inline)
-            .onChange(of: selectedTab) { newTab in
-                switch newTab {
-                case .search:
-                    viewModel.searchViewModel.reload()
-                case .saved:
-                    viewModel.savedViewModel.reload()
-                case .myPage:
-                    viewModel.myPageViewModel.reload()
-                }
+            .tabItem {
+                Image(systemName: "magnifyingglass")
+                Text("Search")
+            }
+            .tag(Tab.search)
+
+            NavigationStack {
+                SavedView(viewModel: viewModel.savedViewModel)
+                    .navigationTitle("Panform")
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem {
+                Image(systemName: "bookmark.fill")
+                Text("Saved")
+            }
+            .tag(Tab.saved)
+
+            NavigationStack {
+                MyPageView(viewModel: viewModel.myPageViewModel)
+                    .navigationTitle("Panform")
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem {
+                Image(systemName: "person.fill")
+                Text("MyPage")
+            }
+            .tag(Tab.myPage)
+        }
+        .accentColor(.darkPink)
+        .onChange(of: selectedTab) { newTab in
+            switch newTab {
+            case .search:
+                viewModel.searchViewModel.reload()
+            case .saved:
+                viewModel.savedViewModel.reload()
+            case .myPage:
+                viewModel.myPageViewModel.reload()
             }
         }
-        .navigationBarBackButtonHidden(true)
     }
 }

@@ -48,7 +48,7 @@ struct BakeryRankingCell: View {
                     .padding(.vertical, 8)
             }
 
-            Text("\(viewModel.bread.price)円")
+            Text("\(viewModel.bread.price) Yen")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 

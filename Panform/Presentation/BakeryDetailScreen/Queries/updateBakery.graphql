@@ -1,0 +1,13 @@
+mutation UpdateBakery(
+  $id: uuid!
+  $openingDays: [String!]
+  $openAt: Int
+  $closeAt: Int
+) {
+  update_bakeries_by_pk(
+    pk_columns: { id: $id }
+    _set: { openAt: $openAt, openingDays: $openingDays, closeAt: $closeAt }
+  ) {
+    id
+  }
+}

@@ -11,7 +11,7 @@ import UIKit
 @Model
 class BakeryPostDraft: Identifiable {
     var id: UUID
-    var bakeryID: BakeryID
+    var placeID: String
     var breadID: BreadID?
     var breadName: String
     var price: Int
@@ -20,9 +20,9 @@ class BakeryPostDraft: Identifiable {
     var draftImages: [BakeryPostDraftImage]
     var uid: String
 
-    init(id: UUID, bakeryID: BakeryID, breadID: BreadID?, breadName: String, score: Float, price: Int, comment: String, draftImages: [BakeryPostDraftImage], uid: String) {
+    init(id: UUID, placeID: String, breadID: BreadID?, breadName: String, score: Float, price: Int, comment: String, draftImages: [BakeryPostDraftImage], uid: String) {
         self.id = id
-        self.bakeryID = bakeryID
+        self.placeID = placeID
         self.breadID = breadID
         self.breadName = breadName
         self.score = score

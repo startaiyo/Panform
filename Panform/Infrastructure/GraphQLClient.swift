@@ -18,7 +18,7 @@ final class GraphQLClient {
         let client = URLSessionClient()
         let provider = DefaultInterceptorProvider(client: client, store: store)
         let url = URL(string: "https://panform-db.hasura.app/v1/graphql")!
-        let token = ""
+        let token = Secrets.hasuraKey
         let transport = RequestChainNetworkTransport(
             interceptorProvider: provider,
             endpointURL: url,

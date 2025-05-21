@@ -12,16 +12,14 @@ struct SavedBakeryBreadCell : View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if let bread = viewModel.bread {
-                HStack {
-                    Text(bread.name)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.darkBlue)
+            HStack {
+                Text(viewModel.bread.name)
+                    .font(.headline)
+                    .foregroundColor(.white)
             }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.darkBlue)
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -31,7 +29,7 @@ struct SavedBakeryBreadCell : View {
 
                     Spacer()
 
-                    Text("\(viewModel.bread?.price ?? 0)円")
+                    Text("\(viewModel.bread.price) Yen")
                         .font(.headline)
                 }
 

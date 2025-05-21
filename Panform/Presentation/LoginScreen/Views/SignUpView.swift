@@ -32,8 +32,7 @@ struct SignUpView: View {
                               text: $viewModel.email)
                         .frame(height: 30)
                         .frame(height: 30)
-                    TextField("password",
-                              text: $viewModel.password)
+                    SecureField("password", text: $viewModel.password)
                         .frame(height: 30)
                 }
                     .padding()
@@ -45,14 +44,19 @@ struct SignUpView: View {
                         dismiss()
                     }
                 } label: {
-                    Text("Sign Up")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .padding()
-                        .foregroundStyle(.white)
+                    if viewModel.shouldShowLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(width: 140, height: 40)
+                    } else {
+                        Text("Sign Up")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .frame(width: 140, height: 40)
+                            .foregroundStyle(.white)
+                    }
                 }
-                    .frame(width: 140,
-                           height:40)
+                    .disabled(viewModel.shouldShowLoading)
                     .background(Color.darkPink)
                     .cornerRadius(30)
                     .padding()
